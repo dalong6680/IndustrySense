@@ -1,3 +1,7 @@
+using System.Net.WebSockets;
+using System.Text;
+using IndustrySense.Server.Services;
+using IndustrySense.Server.Services.Impl;
 
 namespace IndustrySense.Server
 {
@@ -14,6 +18,25 @@ namespace IndustrySense.Server
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            // Register Services
+            builder.Services.AddScoped<IElectricDataService, ElectricDataService>();
+            builder.Services.AddTransient<WebSocketMiddleware>();
+
+            // Configure CORS
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy(
+                    "AllowSpecificOrigins",
+                    builder =>
+                    {
+                        builder
+                            .WithOrigins("https://localhost:5173") // 替换为你的前端地址
+                            .AllowAnyHeader()
+                            .AllowAnyMethod();
+                    }
+                );
+            });
+
             var app = builder.Build();
 
             app.UseDefaultFiles();
@@ -28,10 +51,14 @@ namespace IndustrySense.Server
 
             app.UseHttpsRedirection();
 
+            app.UseCors("AllowSpecificOrigins"); // 使用配置的 CORS 策略
+
             app.UseAuthorization();
 
-
             app.MapControllers();
+
+            app.UseWebSockets();
+            app.UseMiddleware<WebSocketMiddleware>(); // 使用 WebSocket 中间件
 
             app.MapFallbackToFile("/index.html");
 
