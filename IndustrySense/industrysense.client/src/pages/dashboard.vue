@@ -39,49 +39,48 @@
         </el-container>
     </el-container>
 </template>
-  
-<script>
-import * as echarts from 'echarts';
-import Vue3Datepicker from 'vue3-datepicker';
 
-export default {
-    name: 'Dashboard',
-    components: {
-        Vue3Datepicker
-    },
-    data() {
-        return {
-            currentButton: "设备一",
-            buttons: ["设备一", "设备二", "设备三"],
-            electricData: [
-                { index: 1, name: "电压", value: "220V" },
-                { index: 2, name: "电流", value: "5A" },
-                { index: 3, name: "功率", value: "1100W" }
-            ],
-            popup: false,
-            chartDate: new Date(),
-            format: 'yyyy-MM-dd'
-        };
-    },
-    methods: {
-        handleSelect(device) {
-            this.currentButton = device;
+<script>
+    import * as echarts from 'echarts';
+    import Vue3Datepicker from 'vue3-datepicker';
+
+    export default {
+        name: 'dashboard',
+        components: {
+            Vue3Datepicker
         },
-        showChart(name, index) {
-            this.popup = true;
-            // 在此处添加显示图表的逻辑
+        data() {
+            return {
+                currentButton: "设备一",
+                buttons: ["设备一", "设备二", "设备三"],
+                electricData: [
+                    { index: 1, name: "电压", value: "220V" },
+                    { index: 2, name: "电流", value: "5A" },
+                    { index: 3, name: "功率", value: "1100W" }
+                ],
+                popup: false,
+                chartDate: new Date(),
+                format: 'yyyy-MM-dd'
+            };
         },
-        closepopup() {
-            this.popup = false;
-        },
-        showSelectedDateData() {
-            // 在此处添加根据选定日期显示数据的逻辑
+        methods: {
+            handleSelect(device) {
+                this.currentButton = device;
+            },
+            showChart(name, index) {
+                this.popup = true;
+                // 在此处添加显示图表的逻辑
+            },
+            closepopup() {
+                this.popup = false;
+            },
+            showSelectedDateData() {
+                // 在此处添加根据选定日期显示数据的逻辑
+            }
         }
-    }
-};
+    };
 </script>
-  
+
 <style>
-/* 你可以根据需要调整样式 */
+    /* 你可以根据需要调整样式 */
 </style>
-  

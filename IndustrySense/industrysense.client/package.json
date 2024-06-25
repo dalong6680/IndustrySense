@@ -13,7 +13,7 @@
     "echarts": "^5.5.0",
     "element-plus": "^2.7.6",
     "vue": "^3.4.29",
-    "vue-router": "^4.0.13",
+    "vue-router": "^4.4.0",
     "vue3-datepicker": "^0.4.0"
   },
   "devDependencies": {
