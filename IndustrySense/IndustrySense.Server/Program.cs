@@ -1,5 +1,6 @@
 using System.Net.WebSockets;
 using System.Text;
+using IndustrySense.Server.Controllers;
 using IndustrySense.Server.Services;
 using IndustrySense.Server.Services.Impl;
 
@@ -20,7 +21,6 @@ namespace IndustrySense.Server
 
             // Register Services
             builder.Services.AddScoped<IElectricDataService, ElectricDataService>();
-            builder.Services.AddTransient<WebSocketMiddleware>();
 
             // Configure CORS
             builder.Services.AddCors(options =>
@@ -57,8 +57,11 @@ namespace IndustrySense.Server
 
             app.MapControllers();
 
-            app.UseWebSockets();
-            app.UseMiddleware<WebSocketMiddleware>(); // 使用 WebSocket 中间件
+            app.UseWebSockets(new WebSocketOptions
+            {
+                KeepAliveInterval = TimeSpan.FromSeconds(15)
+            });
+            //app.UseMiddleware<WebSocketMiddleware>(); // 使用 WebSocket 中间件
 
             app.MapFallbackToFile("/index.html");
 
