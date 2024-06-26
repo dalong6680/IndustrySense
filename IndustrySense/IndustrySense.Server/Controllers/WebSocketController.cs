@@ -30,7 +30,10 @@ namespace IndustrySense.Server.Services
             {
                 var temperature = random.Next(-10, 35);
                 var message = Encoding.UTF8.GetBytes(temperature.ToString());
-                Task<WebSocketReceiveResult> receiveTask = webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+                Task<WebSocketReceiveResult> receiveTask = webSocket.ReceiveAsync(
+                    new ArraySegment<byte>(buffer),
+                    CancellationToken.None
+                );
                 try
                 {
                     await webSocket.SendAsync(
@@ -40,7 +43,7 @@ namespace IndustrySense.Server.Services
                         CancellationToken.None
                     );
                     Console.WriteLine($"Sent temperature: {temperature}");
-                    webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+                    //webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
                 }
                 catch (WebSocketException ex)
                 {
@@ -48,6 +51,29 @@ namespace IndustrySense.Server.Services
                     break;
                 }
                 await Task.Delay(1000); // 每秒发送一次数据
+            }
+            switch (webSocket.State)
+            {
+                case WebSocketState.CloseReceived:
+                    Console.WriteLine("Closing the WebSocket connection...");
+                    await webSocket.CloseAsync(
+                        WebSocketCloseStatus.NormalClosure,
+                        nameof(WebSocketCloseStatus.NormalClosure),
+                        CancellationToken.None
+                    );
+                    Console.WriteLine("The WebSocket connection has been closed.");
+                    break;
+                case WebSocketState.Closed:
+                    Console.WriteLine("The WebSocket connection has been closed.");
+                    break;
+                case WebSocketState.Aborted:
+                    Console.WriteLine("The WebSocket connection was aborted.");
+                    break;
+                default:
+                    Console.WriteLine(
+                        $"The WebSocket connection is in an unexpected state: {webSocket.State}"
+                    );
+                    break;
             }
         }
     }
