@@ -8,13 +8,13 @@ namespace IndustrySense.Server.Services
     [ApiController]
     public class WebSocketController : ControllerBase
     {
-        [HttpGet("/ws")]
+        [HttpGet("/temp")]
         public async Task Get()
         {
             if (HttpContext.WebSockets.IsWebSocketRequest)
             {
                 using var webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
-                await Echo(webSocket);
+                await Echo(webSocket, HttpContext);
             }
             else
             {
@@ -22,8 +22,11 @@ namespace IndustrySense.Server.Services
             }
         }
 
-        private async Task Echo(WebSocket webSocket)
+        private async Task Echo(WebSocket webSocket, HttpContext httpContext)
         {
+            var remoteEndpoint = httpContext.Connection.RemoteIpAddress?.ToString();
+            var remotePort = httpContext.Connection.RemotePort;
+            Console.WriteLine($"Client connected: {remoteEndpoint}:{remotePort}");
             var random = new Random();
             var buffer = new byte[1024 * 4];
             while (webSocket.State == WebSocketState.Open)
@@ -55,23 +58,31 @@ namespace IndustrySense.Server.Services
             switch (webSocket.State)
             {
                 case WebSocketState.CloseReceived:
-                    Console.WriteLine("Closing the WebSocket connection...");
+                    Console.WriteLine(
+                        $"Closing the WebSocket connection... {remoteEndpoint}:{remotePort}"
+                    );
                     await webSocket.CloseAsync(
                         WebSocketCloseStatus.NormalClosure,
                         nameof(WebSocketCloseStatus.NormalClosure),
                         CancellationToken.None
                     );
-                    Console.WriteLine("The WebSocket connection has been closed.");
+                    Console.WriteLine(
+                        $"The WebSocket connection has been closed. {remoteEndpoint}:{remotePort}"
+                    );
                     break;
                 case WebSocketState.Closed:
-                    Console.WriteLine("The WebSocket connection has been closed.");
+                    Console.WriteLine(
+                        $"The WebSocket connection has been closed. {remoteEndpoint}:{remotePort}"
+                    );
                     break;
                 case WebSocketState.Aborted:
-                    Console.WriteLine("The WebSocket connection was aborted.");
+                    Console.WriteLine(
+                        $"The WebSocket connection was aborted. {remoteEndpoint}:{remotePort}"
+                    );
                     break;
                 default:
                     Console.WriteLine(
-                        $"The WebSocket connection is in an unexpected state: {webSocket.State}"
+                        $"The WebSocket connection is in an unexpected state: {remoteEndpoint}:{remotePort} ,{webSocket.State}"
                     );
                     break;
             }
