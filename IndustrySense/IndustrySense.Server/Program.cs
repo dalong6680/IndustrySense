@@ -1,8 +1,14 @@
+using System;
+using System.Configuration;
 using System.Net.WebSockets;
 using System.Text;
 using IndustrySense.Server.Controllers;
+using IndustrySense.Server.Infrastructure.Repository;
+using IndustrySense.Server.Infrastructure.TcpServer;
 using IndustrySense.Server.Services;
 using IndustrySense.Server.Services.Impl;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace IndustrySense.Server
 {
@@ -12,8 +18,24 @@ namespace IndustrySense.Server
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
+            // Add Database
+            IConfiguration configuration = new ConfigurationBuilder()
+                .SetBasePath(Environment.CurrentDirectory)
+                .AddJsonFile("appsettings.json", true, true)
+                .AddInMemoryCollection()
+                .Build();
+            builder.Services.AddDbContextFactory<DatabaseContext>(
+                options =>
+                {
+                    options.UseMySQL(
+                        configuration.GetConnectionString("DefaultConnection")
+                            ?? throw new Exception("Database connection srting not found!")
+                    );
+                },
+                ServiceLifetime.Transient
+            );
 
+            // Add services to the container.
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
@@ -21,6 +43,13 @@ namespace IndustrySense.Server
 
             // Register Services
             builder.Services.AddScoped<IElectricDataService, ElectricDataService>();
+            builder.Services.AddSingleton<ITcpServer>(provider =>
+            {
+                var tcpServer = new TcpServer(12345); // Replace with your desired port number
+                return tcpServer;
+            });
+
+            builder.Services.AddHostedService<TcpServerHostedService>();
 
             // Configure CORS
             builder.Services.AddCors(options =>
@@ -57,11 +86,9 @@ namespace IndustrySense.Server
 
             app.MapControllers();
 
-            app.UseWebSockets(new WebSocketOptions
-            {
-                KeepAliveInterval = TimeSpan.FromSeconds(15)
-            });
-            //app.UseMiddleware<WebSocketMiddleware>(); // 使用 WebSocket 中间件
+            app.UseWebSockets(
+                new WebSocketOptions { KeepAliveInterval = TimeSpan.FromSeconds(15) }
+            );
 
             app.MapFallbackToFile("/index.html");
 

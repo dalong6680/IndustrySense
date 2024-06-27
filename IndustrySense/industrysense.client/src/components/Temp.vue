@@ -27,7 +27,7 @@ export default {
     this.initChart();
 
     // 初始化 WebSocket 连接
-    this.ws = new WebSocket('wss://localhost:7210/ws');
+    this.ws = new WebSocket('wss://localhost:7210/temp');
 
     this.ws.onopen = () => {
       console.log("WebSocket 连接已建立");
