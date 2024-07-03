@@ -16,7 +16,7 @@ namespace IndustrySense.Server.Migrations
                 .Annotation("MySQL:Charset", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "Devices",
+                name: "Device",
                 columns: table => new
                 {
                     DeviceId = table.Column<int>(type: "int", nullable: false)
@@ -30,7 +30,7 @@ namespace IndustrySense.Server.Migrations
                 .Annotation("MySQL:Charset", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "Records",
+                name: "Record",
                 columns: table => new
                 {
                     RecordId = table.Column<int>(type: "int", nullable: false)
@@ -46,7 +46,7 @@ namespace IndustrySense.Server.Migrations
                     table.ForeignKey(
                         name: "FK_Records_Devices_DeviceId",
                         column: x => x.DeviceId,
-                        principalTable: "Devices",
+                        principalTable: "Device",
                         principalColumn: "DeviceId",
                         onDelete: ReferentialAction.Cascade);
                 })
@@ -54,7 +54,7 @@ namespace IndustrySense.Server.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_Records_DeviceId",
-                table: "Records",
+                table: "Record",
                 column: "DeviceId");
         }
 
@@ -62,10 +62,10 @@ namespace IndustrySense.Server.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Records");
+                name: "Record");
 
             migrationBuilder.DropTable(
-                name: "Devices");
+                name: "Device");
         }
     }
 }

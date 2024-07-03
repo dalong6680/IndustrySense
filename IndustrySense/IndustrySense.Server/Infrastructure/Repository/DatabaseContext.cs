@@ -11,8 +11,9 @@ namespace IndustrySense.Server.Infrastructure.Repository
 
         }
 
-        public DbSet<Device> Devices { get; set; }
-        public DbSet<Record> Records { get; set; }
+        public DbSet<Device> Device { get; set; }
+        public DbSet<Record> Record { get; set; }
+        public DbSet<ParsingRule> ParsingRule { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

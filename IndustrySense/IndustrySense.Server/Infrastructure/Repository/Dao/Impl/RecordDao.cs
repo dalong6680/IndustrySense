@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Linq.Expressions;
 using IndustrySense.Server.Dto;
 using IndustrySense.Server.Infrastructure.Repository.Entity;
@@ -7,22 +8,22 @@ using Microsoft.EntityFrameworkCore;
 
 namespace IndustrySense.Server.Infrastructure.Repository.Dao.Impl
 {
-    public class DeviceDao : IDao<Device>
+    public class RecordDao : IDao<Record>
     {
         private readonly IDbContextFactory<DatabaseContext> _dbContextFactory;
 
-        public DeviceDao(IDbContextFactory<DatabaseContext> dbContextFactory)
+        public RecordDao(IDbContextFactory<DatabaseContext> dbContextFactory)
         {
             _dbContextFactory = dbContextFactory;
         }
 
-        public void Insert(Device entity)
+        public void Insert(Record entity)
         {
             using var ctx = _dbContextFactory.CreateDbContext();
             using var transaction = ctx.Database.BeginTransaction();
             try
             {
-                ctx.Device.Add(entity);
+                ctx.Record.Add(entity);
                 ctx.SaveChanges();
                 transaction.Commit();
             }
@@ -33,14 +34,14 @@ namespace IndustrySense.Server.Infrastructure.Repository.Dao.Impl
             }
         }
 
-        public void Delete(Expression<Func<Device, bool>> filter)
+        public void Delete(Expression<Func<Record, bool>> filter)
         {
             using var ctx = _dbContextFactory.CreateDbContext();
             using var transaction = ctx.Database.BeginTransaction();
             try
             {
-                var entity = ctx.Device.First(filter);
-                ctx.Device.Remove(entity);
+                var entity = ctx.Record.First(filter);
+                ctx.Record.Remove(entity);
                 ctx.SaveChanges();
                 transaction.Commit();
             }
@@ -51,13 +52,13 @@ namespace IndustrySense.Server.Infrastructure.Repository.Dao.Impl
             }
         }
 
-        public void Update(Expression<Func<Device, bool>> filter, Action<Device> predicate)
+        public void Update(Expression<Func<Record, bool>> filter, Action<Record> predicate)
         {
             using var ctx = _dbContextFactory.CreateDbContext();
             using var transaction = ctx.Database.BeginTransaction();
             try
             {
-                var entity = ctx.Device.First(filter);
+                var entity = ctx.Record.First(filter);
                 predicate.Invoke(entity);
                 ctx.SaveChanges();
                 transaction.Commit();
@@ -69,12 +70,12 @@ namespace IndustrySense.Server.Infrastructure.Repository.Dao.Impl
             }
         }
 
-        public Device? Select(Expression<Func<Device, bool>> filter)
+        public Record? Select(Expression<Func<Record, bool>> filter)
         {
             using var ctx = _dbContextFactory.CreateDbContext();
             try
             {
-                return ctx.Device.FirstOrDefault(filter);
+                return ctx.Record.FirstOrDefault(filter);
             }
             catch (Exception)
             {
@@ -82,15 +83,15 @@ namespace IndustrySense.Server.Infrastructure.Repository.Dao.Impl
             }
         }
 
-        public ResultSet<Device> SelectFilteredList(
-            Expression<Func<Device, bool>> filter,
+        public ResultSet<Record> SelectFilteredList(
+            Expression<Func<Record, bool>> filter,
             int pageIndex
         )
         {
             using var ctx = _dbContextFactory.CreateDbContext();
             try
             {
-                return ctx.Device.Where(filter).Page(pageIndex);
+                return ctx.Record.Where(filter).Page(pageIndex);
             }
             catch (Exception)
             {

@@ -34,7 +34,7 @@ namespace IndustrySense.Server.Migrations
 
                     b.HasKey("DeviceId");
 
-                    b.ToTable("Devices");
+                    b.ToTable("Device");
                 });
 
             modelBuilder.Entity("IndustrySense.Server.Infrastructure.Repository.Entity.Record", b =>
@@ -60,7 +60,7 @@ namespace IndustrySense.Server.Migrations
 
                     b.HasIndex("DeviceId");
 
-                    b.ToTable("Records");
+                    b.ToTable("Record");
                 });
 
             modelBuilder.Entity("IndustrySense.Server.Infrastructure.Repository.Entity.Record", b =>
