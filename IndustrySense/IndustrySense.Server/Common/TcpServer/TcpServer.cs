@@ -4,7 +4,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IndustrySense.Server.Infrastructure.TcpServer
+namespace IndustrySense.Server.Common.TcpServer
 {
     public class TcpServer : ITcpServer
     {

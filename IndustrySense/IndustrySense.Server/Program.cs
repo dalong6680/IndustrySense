@@ -4,8 +4,8 @@ using System.Net.WebSockets;
 using System.Text;
 using IndustrySense.Server.Application.Services;
 using IndustrySense.Server.Application.Services.Impl;
+using IndustrySense.Server.Common.TcpServer;
 using IndustrySense.Server.Infrastructure.Data;
-using IndustrySense.Server.Infrastructure.TcpServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 

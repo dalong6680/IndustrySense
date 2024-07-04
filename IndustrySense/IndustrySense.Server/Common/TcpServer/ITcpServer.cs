@@ -1,4 +1,4 @@
-﻿namespace IndustrySense.Server.Infrastructure.TcpServer
+﻿namespace IndustrySense.Server.Common.TcpServer
 {
     public interface ITcpServer
     {

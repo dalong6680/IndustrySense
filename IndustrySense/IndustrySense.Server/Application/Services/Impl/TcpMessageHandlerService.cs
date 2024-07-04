@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using IndustrySense.Server.Infrastructure.TcpServer;
+using IndustrySense.Server.Common.TcpServer;
 using Microsoft.Extensions.Hosting;
 
 namespace IndustrySense.Server.Application.Services
@@ -32,9 +32,6 @@ namespace IndustrySense.Server.Application.Services
 
         private void OnMessageReceived(object? sender, string message)
         {
-            // 在这里处理接收到的消息
-            Console.WriteLine($"Processing message: {message}");
-
             // 示例处理：假设处理是异步的
             ProcessMessageAsync(message).GetAwaiter().GetResult();
         }
@@ -43,6 +40,9 @@ namespace IndustrySense.Server.Application.Services
         {
             // 这里实现具体的消息处理逻辑
             // 示例：简单打印消息
+
+
+
             Console.WriteLine($"Processed message: {message}");
 
             // 假设消息处理需要异步操作
