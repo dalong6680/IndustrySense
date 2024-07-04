@@ -51,6 +51,10 @@ namespace IndustrySense.Server.Infrastructure.TcpServer
         {
             try
             {
+                // 设置超时时间
+                client.ReceiveTimeout = 5000; // 读取超时（毫秒）
+                client.SendTimeout = 5000; // 发送超时（毫秒）
+
                 NetworkStream stream = client.GetStream();
                 byte[] buffer = new byte[1024];
                 int bytesRead;
@@ -72,12 +76,20 @@ namespace IndustrySense.Server.Infrastructure.TcpServer
                     //await stream.WriteAsync(response, 0, response.Length).ConfigureAwait(false);
                 }
             }
+            catch (IOException ex)
+                when (ex.InnerException is SocketException se
+                    && se.SocketErrorCode == SocketError.TimedOut
+                )
+            {
+                Console.WriteLine($"Client timed out: {client.Client.RemoteEndPoint}");
+            }
             catch (Exception ex)
             {
                 Console.WriteLine($"Exception in HandleClient: {ex.Message}");
             }
             finally
             {
+                Console.WriteLine($"Client disconnected: {client.Client.RemoteEndPoint}");
                 client.Close();
             }
         }
