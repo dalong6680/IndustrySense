@@ -1,6 +1,6 @@
 ﻿using System.Data;
 
-namespace IndustrySense.Server.Dto
+namespace IndustrySense.Server.Application.Dto
 {
     public class ResultSet<T>(IEnumerable<T> resultList, int resultCount, int pageIndex)
     {

@@ -1,7 +1,7 @@
-﻿using IndustrySense.Server.Services;
+﻿using IndustrySense.Server.Application.Services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace IndustrySense.Server.Controllers
+namespace IndustrySense.Server.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

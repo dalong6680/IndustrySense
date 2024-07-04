@@ -1,6 +1,6 @@
 ﻿using IndustrySense.Server.Models;
 
-namespace IndustrySense.Server.Services
+namespace IndustrySense.Server.Application.Services
 {
     public interface IElectricDataService
     {

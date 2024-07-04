@@ -1,6 +1,7 @@
-﻿using IndustrySense.Server.Models;
+﻿using IndustrySense.Server.Application.Services;
+using IndustrySense.Server.Models;
 
-namespace IndustrySense.Server.Services.Impl
+namespace IndustrySense.Server.Application.Services.Impl
 {
     public class ElectricDataService : IElectricDataService
     {

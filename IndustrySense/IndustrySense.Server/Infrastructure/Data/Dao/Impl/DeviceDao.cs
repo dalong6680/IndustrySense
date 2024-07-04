@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Linq.Expressions;
-using IndustrySense.Server.Dto;
-using IndustrySense.Server.Infrastructure.Repository.Entity;
-using IndustrySense.Server.Utilities;
+using IndustrySense.Server.Application.Dto;
+using IndustrySense.Server.Common.Helpers;
+using IndustrySense.Server.Infrastructure.Data.Entity;
 using Microsoft.EntityFrameworkCore;
 
-namespace IndustrySense.Server.Infrastructure.Repository.Dao.Impl
+namespace IndustrySense.Server.Infrastructure.Data.Dao.Impl
 {
-    public class DeviceDao : IDao<Device>
+    public class DeviceDao : IDeviceDao
     {
         private readonly IDbContextFactory<DatabaseContext> _dbContextFactory;
 

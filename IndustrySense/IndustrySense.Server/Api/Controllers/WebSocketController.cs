@@ -3,7 +3,7 @@ using System.Net.WebSockets;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
 
-namespace IndustrySense.Server.Services
+namespace IndustrySense.Server.Api.Controllers
 {
     [ApiController]
     public class WebSocketController : ControllerBase

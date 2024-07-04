@@ -2,11 +2,10 @@ using System;
 using System.Configuration;
 using System.Net.WebSockets;
 using System.Text;
-using IndustrySense.Server.Controllers;
-using IndustrySense.Server.Infrastructure.Repository;
+using IndustrySense.Server.Application.Services;
+using IndustrySense.Server.Application.Services.Impl;
+using IndustrySense.Server.Infrastructure.Data;
 using IndustrySense.Server.Infrastructure.TcpServer;
-using IndustrySense.Server.Services;
-using IndustrySense.Server.Services.Impl;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
@@ -43,13 +42,9 @@ namespace IndustrySense.Server
 
             // Register Services
             builder.Services.AddScoped<IElectricDataService, ElectricDataService>();
-            builder.Services.AddSingleton<ITcpServer>(provider =>
-            {
-                var tcpServer = new TcpServer(12345); // Replace with your desired port number
-                return tcpServer;
-            });
+            builder.Services.AddSingleton<ITcpServer, TcpServer>(provider => new TcpServer(12345));
 
-            builder.Services.AddHostedService<TcpServerHostedService>();
+            builder.Services.AddHostedService<TcpMessageHandlerService>();
 
             // Configure CORS
             builder.Services.AddCors(options =>

@@ -1,8 +1,8 @@
-﻿using IndustrySense.Server.Infrastructure.Repository.Entity;
+﻿using IndustrySense.Server.Infrastructure.Data.Entity;
 using Microsoft.EntityFrameworkCore;
 using System;
 
-namespace IndustrySense.Server.Infrastructure.Repository
+namespace IndustrySense.Server.Infrastructure.Data
 {
     public class DatabaseContext :DbContext
     {

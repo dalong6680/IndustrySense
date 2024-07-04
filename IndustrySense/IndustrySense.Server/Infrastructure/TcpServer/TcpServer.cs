@@ -1,6 +1,8 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace IndustrySense.Server.Infrastructure.TcpServer
 {
@@ -39,13 +41,13 @@ namespace IndustrySense.Server.Infrastructure.TcpServer
             while (_isRunning)
             {
                 TcpClient client = await _listener.AcceptTcpClientAsync();
-                Console.WriteLine($"Client connected: {client.Client.RemoteEndPoint}");
+                Console.WriteLine($"TCP Client connected: {client.Client.RemoteEndPoint}");
 
-                HandleClient(client);
+                _ = Task.Run(() => HandleClient(client));
             }
         }
 
-        private async void HandleClient(TcpClient client)
+        private async Task HandleClient(TcpClient client)
         {
             try
             {
@@ -53,16 +55,21 @@ namespace IndustrySense.Server.Infrastructure.TcpServer
                 byte[] buffer = new byte[1024];
                 int bytesRead;
 
-                while ((bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length)) != 0)
+                while (
+                    (
+                        bytesRead = await stream
+                            .ReadAsync(buffer, 0, buffer.Length)
+                            .ConfigureAwait(false)
+                    ) != 0
+                )
                 {
                     string message = Encoding.UTF8.GetString(buffer, 0, bytesRead);
                     Console.WriteLine($"Received: {message}");
 
-                    MessageReceived?.Invoke(this, message); // Raise event for received message
+                    MessageReceived?.Invoke(this, message);
 
-                    // Example: Echo the message back to the client
-                    byte[] response = Encoding.UTF8.GetBytes($"Server: {message}");
-                    await stream.WriteAsync(response, 0, response.Length);
+                    //byte[] response = Encoding.UTF8.GetBytes($"Server: {message}");
+                    //await stream.WriteAsync(response, 0, response.Length).ConfigureAwait(false);
                 }
             }
             catch (Exception ex)

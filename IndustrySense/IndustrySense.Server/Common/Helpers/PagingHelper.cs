@@ -1,6 +1,6 @@
-﻿using IndustrySense.Server.Dto;
+﻿using IndustrySense.Server.Application.Dto;
 
-namespace IndustrySense.Server.Utilities
+namespace IndustrySense.Server.Common.Helpers
 {
     public static class PagingHelper
     {

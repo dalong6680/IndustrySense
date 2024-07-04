@@ -1,4 +1,4 @@
-﻿namespace IndustrySense.Server.Infrastructure.Repository.Entity
+﻿namespace IndustrySense.Server.Infrastructure.Data.Entity
 {
     public class Record
     {

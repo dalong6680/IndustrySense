@@ -1,29 +1,29 @@
 ﻿using System;
 using System.Linq;
 using System.Linq.Expressions;
-using IndustrySense.Server.Dto;
-using IndustrySense.Server.Infrastructure.Repository.Entity;
-using IndustrySense.Server.Utilities;
+using IndustrySense.Server.Application.Dto;
+using IndustrySense.Server.Common.Helpers;
+using IndustrySense.Server.Infrastructure.Data.Entity;
 using Microsoft.EntityFrameworkCore;
 
-namespace IndustrySense.Server.Infrastructure.Repository.Dao.Impl
+namespace IndustrySense.Server.Infrastructure.Data.Dao.Impl
 {
-    public class RecordDao : IDao<Record>
+    public class ParsingRuleDao : IParsingRuleDao
     {
         private readonly IDbContextFactory<DatabaseContext> _dbContextFactory;
 
-        public RecordDao(IDbContextFactory<DatabaseContext> dbContextFactory)
+        public ParsingRuleDao(IDbContextFactory<DatabaseContext> dbContextFactory)
         {
             _dbContextFactory = dbContextFactory;
         }
 
-        public void Insert(Record entity)
+        public void Insert(ParsingRule entity)
         {
             using var ctx = _dbContextFactory.CreateDbContext();
             using var transaction = ctx.Database.BeginTransaction();
             try
             {
-                ctx.Record.Add(entity);
+                ctx.ParsingRule.Add(entity);
                 ctx.SaveChanges();
                 transaction.Commit();
             }
@@ -34,14 +34,14 @@ namespace IndustrySense.Server.Infrastructure.Repository.Dao.Impl
             }
         }
 
-        public void Delete(Expression<Func<Record, bool>> filter)
+        public void Delete(Expression<Func<ParsingRule, bool>> filter)
         {
             using var ctx = _dbContextFactory.CreateDbContext();
             using var transaction = ctx.Database.BeginTransaction();
             try
             {
-                var entity = ctx.Record.First(filter);
-                ctx.Record.Remove(entity);
+                var entity = ctx.ParsingRule.First(filter);
+                ctx.ParsingRule.Remove(entity);
                 ctx.SaveChanges();
                 transaction.Commit();
             }
@@ -52,13 +52,16 @@ namespace IndustrySense.Server.Infrastructure.Repository.Dao.Impl
             }
         }
 
-        public void Update(Expression<Func<Record, bool>> filter, Action<Record> predicate)
+        public void Update(
+            Expression<Func<ParsingRule, bool>> filter,
+            Action<ParsingRule> predicate
+        )
         {
             using var ctx = _dbContextFactory.CreateDbContext();
             using var transaction = ctx.Database.BeginTransaction();
             try
             {
-                var entity = ctx.Record.First(filter);
+                var entity = ctx.ParsingRule.First(filter);
                 predicate.Invoke(entity);
                 ctx.SaveChanges();
                 transaction.Commit();
@@ -70,12 +73,12 @@ namespace IndustrySense.Server.Infrastructure.Repository.Dao.Impl
             }
         }
 
-        public Record? Select(Expression<Func<Record, bool>> filter)
+        public ParsingRule? Select(Expression<Func<ParsingRule, bool>> filter)
         {
             using var ctx = _dbContextFactory.CreateDbContext();
             try
             {
-                return ctx.Record.FirstOrDefault(filter);
+                return ctx.ParsingRule.FirstOrDefault(filter);
             }
             catch (Exception)
             {
@@ -83,15 +86,15 @@ namespace IndustrySense.Server.Infrastructure.Repository.Dao.Impl
             }
         }
 
-        public ResultSet<Record> SelectFilteredList(
-            Expression<Func<Record, bool>> filter,
+        public ResultSet<ParsingRule> SelectFilteredList(
+            Expression<Func<ParsingRule, bool>> filter,
             int pageIndex
         )
         {
             using var ctx = _dbContextFactory.CreateDbContext();
             try
             {
-                return ctx.Record.Where(filter).Page(pageIndex);
+                return ctx.ParsingRule.Where(filter).Page(pageIndex);
             }
             catch (Exception)
             {
