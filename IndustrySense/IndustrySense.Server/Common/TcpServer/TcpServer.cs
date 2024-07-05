@@ -70,7 +70,7 @@ namespace IndustrySense.Server.Common.TcpServer
                     string message = Encoding.UTF8.GetString(buffer, 0, bytesRead);
                     Console.WriteLine($"Received: {message}");
 
-                    MessageReceived?.Invoke(this, message);
+                    MessageReceived?.Invoke(client, message);
 
                     //byte[] response = Encoding.UTF8.GetBytes($"Server: {message}");
                     //await stream.WriteAsync(response, 0, response.Length).ConfigureAwait(false);

@@ -1,4 +1,5 @@
 ﻿using NLua;
+using Org.BouncyCastle.Asn1;
 
 namespace IndustrySense.Server.Common.Executor
 {
@@ -9,13 +10,23 @@ namespace IndustrySense.Server.Common.Executor
         public LuaExecutor()
         {
             _lua = new Lua();
+            try
+            {
+                _lua.DoFile("./Lua/dkjson.lua");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error loading dkjson.lua: {ex.Message}");
+            }
         }
 
-        public object? Execute(string script)
+        public object[] ExecuteScript(string script, string arg)
         {
             try
             {
-                return _lua.DoString(script);
+                _lua["data"] = arg;
+                var result = _lua.DoString(script);
+                return result;
             }
             catch (Exception ex)
             {
