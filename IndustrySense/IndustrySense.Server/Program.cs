@@ -6,6 +6,8 @@ using IndustrySense.Server.Application.Services;
 using IndustrySense.Server.Application.Services.Impl;
 using IndustrySense.Server.Common.TcpServer;
 using IndustrySense.Server.Infrastructure.Data;
+using IndustrySense.Server.Infrastructure.Data.Dao;
+using IndustrySense.Server.Infrastructure.Data.Dao.Impl;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
@@ -33,6 +35,9 @@ namespace IndustrySense.Server
                 },
                 ServiceLifetime.Transient
             );
+            builder.Services.AddTransient<IParsingRuleDao, ParsingRuleDao>();
+            builder.Services.AddTransient<IDeviceDao, DeviceDao>();
+            builder.Services.AddTransient<IRecordDao, RecordDao>();
 
             // Add services to the container.
             builder.Services.AddControllers();
@@ -43,6 +48,10 @@ namespace IndustrySense.Server
             // Register Services
             builder.Services.AddScoped<IElectricDataService, ElectricDataService>();
             builder.Services.AddSingleton<ITcpServer, TcpServer>(provider => new TcpServer(12345));
+
+            builder.Services.AddTransient<IParsingRuleService, ParsingRuleService>();
+            builder.Services.AddTransient<IDeviceService, DeviceService>();
+            builder.Services.AddTransient<IRecordService, RecordService>();
 
             builder.Services.AddHostedService<TcpMessageHandlerService>();
 

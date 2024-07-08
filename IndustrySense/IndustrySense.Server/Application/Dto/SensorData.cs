@@ -1,6 +1,6 @@
 ﻿namespace IndustrySense.Server.Application.Dto
 {
-    public class SensorDescriptor
+    public class SensorData
     {
         public required string DeviceId { get; set; }
         public DateTime Timestamp { get; set; }
