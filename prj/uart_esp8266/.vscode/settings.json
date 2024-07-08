@@ -5,6 +5,10 @@
         "esp8266.h": "c",
         "ls1x.h": "c",
         "usergpio.h": "c",
-        "ls1x_clock.h": "c"
+        "ls1x_clock.h": "c",
+        "ls1c102_interrupt.h": "c",
+        "queue.h": "c",
+        "ls1x_gpio.h": "c",
+        "config.h": "c"
     }
 }

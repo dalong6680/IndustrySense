@@ -1,4 +1,3 @@
-
 #include "ls1x.h"
 #include "Config.h"
 #include "ls1x_gpio.h"
@@ -11,7 +10,7 @@
     UART0(连接外部ESP8266)
     gpio_pin_remap(GPIO_PIN_6,GPIO_FUNC_MAIN);          //GPIO6管脚复用为RX
     gpio_pin_remap(GPIO_PIN_7,GPIO_FUNC_MAIN);          //GPIO7管脚复用为TX
-    
+
     UART1(连接板上CH341A)
     gpio_pin_remap(GPIO_PIN_8,GPIO_FUNC_MAIN);          //GPIO8管脚复用为RX
     gpio_pin_remap(GPIO_PIN_9,GPIO_FUNC_MAIN);          //GPIO9管脚复用为TX
@@ -22,10 +21,12 @@
 */
 int main(int arg, char *args[])
 {
+    // printf("clk:%d\r\n", CLOCK_GetClocksFreq());
+    // printf("chipcrtl:%d\r\n", PMU_CHIPCTRL);
 
     esp8266_init();
 
-    while(1)
+    while (1)
     {
         delay_ms(1000);
         esp8266_send_data("Hello World!");

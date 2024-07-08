@@ -90,15 +90,16 @@ void esp8266_init(void)
     delay_ms(5000);
     // 让模块连接上自己的手机热点
     // printf("AT+CWJAP=@PHICOMM_C3,dalong6680\r\n");
-    while (esp8266_send_cmd("AT+CWJAP=\"@PHICOMM_C3\",\"dalong6680\"", "OK", 300))
+    while (esp8266_send_cmd("AT+CWJAP=\"Xiaomi 13\",\"vanvan22.\"", "OK", 300))
         ;
+        delay_ms(2000);
     // =0：单路连接模式；=1：多路连接模式
     // printf("AT+CIPMUX=0\r\n");
     while (esp8266_send_cmd("AT+CIPMUX=0", "OK", 150))
         ;
     // 建立TCP连接  这三项分别代表：连接类型、远程服务器IP地址、远程服务器端口号
     // printf("AT+CIPSTART=TCP,152.70.80.204,57215\r\n");
-    while (esp8266_send_cmd("AT+CIPSTART=\"TCP\",\"152.70.80.204\",57756", "OK", 300))
+    while (esp8266_send_cmd("AT+CIPSTART=\"TCP\",\"152.70.80.204\",58180", "OK", 300))
         ;
 
     // 是否开启透传模式，=0：表示关闭透传；=1：表示开启透传

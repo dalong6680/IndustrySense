@@ -386,6 +386,7 @@ void intc_handler(void)
             while(UART0_LSR&0x1)
             {
                 receive_Data=UART_ReceiveData(UART0);//接收数据
+                printf("%c", receive_Data);
                 Queue_Wirte(&Circular_queue, (uint8_t *)&receive_Data, 1);//向队列中写入数据
             }
 
