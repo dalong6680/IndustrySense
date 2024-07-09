@@ -10,5 +10,6 @@ namespace IndustrySense.Server.Application.Services
         Device? GetDeviceByName(string name);
         ResultSet<Device> GetDevices(int pageIndex);
         void RemoveDeviceById(int id);
+        void UpdateDevice(int id, Device newDevice);
     }
 }

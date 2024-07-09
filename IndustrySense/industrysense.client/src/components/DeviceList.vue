@@ -6,7 +6,7 @@
                     <el-button type="warning" @click="refresh">
                         <span>刷新</span>
                     </el-button>
-                    <el-button type="primary" @click="dialogFormVisible = true">
+                    <el-button type="primary" @click="addDialogVisible = true">
                         <span>添加</span>
                     </el-button>
                     <el-button type="danger" @click="deleteSelectedDevices">
@@ -14,8 +14,8 @@
                     </el-button>
                 </div>
                 <div class="complex-header-input">
-                    <el-input placeholder="请输入标题" style="width: 250px"></el-input>
-                    <el-button type="success">
+                    <el-input v-model="searchKeyword" placeholder="请输入设备名称" style="width: 250px"></el-input>
+                    <el-button type="success" @click="searchDevices">
                         <span>搜索</span>
                     </el-button>
                 </div>
@@ -30,7 +30,8 @@
                     <el-table-column prop="parsingRuleId" label="解析规则ID" width="100" align="center"></el-table-column>
                     <el-table-column label="操作" width="250" align="center">
                         <template #default="scope">
-                            <el-button type="primary">编辑</el-button>
+                            <el-button type="primary"
+                                @click="doEditDevice0(scope.row.deviceId, scope.row.deviceName, scope.row.deviceIpAddress, scope.row.parsingRuleId)">编辑</el-button>
                             <el-button type="danger" @click="deleteDevice(scope.row.deviceId)">删除</el-button>
                         </template>
                     </el-table-column>
@@ -44,35 +45,63 @@
         </div>
 
         <!-- 添加设备的对话框 -->
-        <el-dialog title="添加设备" v-model="dialogFormVisible">
+        <el-dialog title="添加设备" v-model="addDialogVisible" width="500">
             <el-form :model="newDevice">
-                <el-form-item label="设备ID">
+                <el-form-item label="设备ID" :label-width=120>
                     <el-input v-model="newDevice.DeviceId"></el-input>
                 </el-form-item>
-                <el-form-item label="设备名称">
+                <el-form-item label="设备名称" :label-width=120>
                     <el-input v-model="newDevice.DeviceName"></el-input>
                 </el-form-item>
-                <el-form-item label="设备IP地址">
+                <el-form-item label="设备IP地址" :label-width=120>
                     <el-input v-model="newDevice.DeviceIpAddress"></el-input>
                 </el-form-item>
-                <el-form-item label="解析规则ID">
+                <el-form-item label="解析规则ID" :label-width=120>
                     <el-input v-model="newDevice.ParsingRuleId"></el-input>
                 </el-form-item>
             </el-form>
-            <div slot="footer" class="dialog-footer">
-                <el-button @click="dialogFormVisible = false">取消</el-button>
-                <el-button type="primary" @click="addDevice">添加</el-button>
-            </div>
+            <template #footer>
+                <div slot="footer" class="dialog-footer">
+                    <el-button @click="addDialogVisible = false">取消</el-button>
+                    <el-button type="primary" @click="doAddDevice">添加</el-button>
+                </div>
+            </template>
         </el-dialog>
+
+        <!-- 编辑设备的对话框 -->
+        <el-dialog title="编辑设备" v-model="editDialogVisible" width="500">
+            <el-form :model="editDevice">
+                <el-form-item label="设备ID" :label-width="120">
+                    <el-input v-model="editDevice.DeviceId" disabled></el-input>
+                </el-form-item>
+                <el-form-item label="设备名称" :label-width="120">
+                    <el-input v-model="editDevice.DeviceName"></el-input>
+                </el-form-item>
+                <el-form-item label="设备IP地址" :label-width="120">
+                    <el-input v-model="editDevice.DeviceIpAddress"></el-input>
+                </el-form-item>
+                <el-form-item label="Lua解析脚本ID" :label-width="120">
+                    <el-input v-model="editDevice.ParsingRuleId"></el-input>
+                </el-form-item>
+            </el-form>
+            <template #footer>
+                <div slot="footer" class="dialog-footer">
+                    <el-button @click="editDialogVisible = false">取消</el-button>
+                    <el-button type="primary" @click="doEditDevice">保存</el-button>
+                </div>
+            </template>
+        </el-dialog>
+
     </div>
 </template>
 
 <script setup lang="ts">
 import { ref, reactive, onMounted, toRefs } from 'vue'
-import { getDevices, deleteDevice, addDevice, deleteDeviceById } from '@/api/device'
+import { getDevices, addDevice, deleteDeviceById, updateDevice } from '@/api/device'
 import { ElMessage } from 'element-plus'
 
-const dialogFormVisible = ref(false)
+let addDialogVisible = ref(false)
+let editDialogVisible = ref(false)
 
 interface IDevice {
     deviceId: number
@@ -89,18 +118,26 @@ const state = reactive({
     page: {
         total: 0,
         page_size: 20,
-        page_number: 1,
+        page_number: 1
     },
+    searchKeyword: ''
 })
 
 const newDevice = reactive({
-    DeviceId: 0,
+    DeviceId: '',
     DeviceName: '',
     DeviceIpAddress: '',
-    ParsingRuleId: 0,
+    ParsingRuleId: '',
 })
 
-const { tableData, loading, page } = toRefs(state)
+const editDevice = reactive({
+    DeviceId: '',
+    DeviceName: '',
+    DeviceIpAddress: '',
+    ParsingRuleId: ''
+})
+
+const { tableData, loading, page, searchKeyword } = toRefs(state)
 
 onMounted(() => {
     getData()
@@ -145,7 +182,7 @@ const deleteSelectedDevices = async () => {
     }
     try {
         await Promise.all(
-            state.ids.map((id) => deleteDevice(id))
+            state.ids.map((id) => deleteDeviceById(id))
         )
         ElMessage.success('设备删除成功')
         getData()
@@ -154,17 +191,37 @@ const deleteSelectedDevices = async () => {
     }
 }
 
-const addDevice = async () => {
+const doAddDevice = async () => {
     try {
-        await addDevice({ ...newDevice })
+        await addDevice(newDevice)
         ElMessage.success('设备添加成功')
-        closeAddDialog()
-        getData()
+        addDialogVisible.value = false
+        getData()  // 刷新设备列表
     } catch (error) {
+        console.log(error)
         ElMessage.error('添加设备失败')
     }
 }
+const doEditDevice0 = async (deviceId: number, deviceName: string, deviceIpAddress: string, parsingRuleId: number) => {
+    editDevice.DeviceId = deviceId;
+    editDevice.DeviceName = deviceName;
+    editDevice.DeviceIpAddress = deviceIpAddress;
+    editDevice.ParsingRuleId = parsingRuleId;
 
+    editDialogVisible.value = true;
+}
+const doEditDevice = async () => {
+    try {
+
+        await updateDevice(editDevice.DeviceId, editDevice)
+        ElMessage.success('设备更新成功')
+        editDialogVisible.value = false
+        getData()  // 刷新设备列表
+    } catch (error) {
+        console.log(error)
+        ElMessage.error('更新设备失败')
+    }
+}
 const handleSelectionChange = (deviceList: IDevice[]) => {
     state.ids = deviceList.map((device) => device.deviceId)
 }
@@ -182,7 +239,19 @@ const handleCurrentChange = (page: number) => {
 const refresh = () => {
     state.page.page_number = 1
     state.page.page_size = 20
+    state.searchKeyword = ''
     getData()
+}
+
+const searchDevices = () => {
+    const keyword = state.searchKeyword.trim().toLowerCase()
+    if (!keyword) {
+        state.tableData = [...state.devices]
+        return
+    }
+    state.tableData = state.devices.filter(device =>
+        device.deviceName.toLowerCase().includes(keyword)
+    )
 }
 </script>
 
@@ -196,7 +265,6 @@ const refresh = () => {
     justify-content: space-between;
     background: white;
     padding: 20px;
-    border-top: 1px solid #eee;
 }
 
 .complex-header-action {
@@ -212,8 +280,6 @@ const refresh = () => {
 }
 
 .container .complex-content {
-    margin: 20px;
-    padding: 20px;
     border-radius: 4px;
     background: white;
 }

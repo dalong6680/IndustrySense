@@ -54,10 +54,11 @@ namespace IndustrySense.Server.Api.Controllers
             return Ok(result);
         }
 
-        // public IActionResult UpdateDevice([FromQuery] Expression<Func<Device, bool>> filter, [FromQuery] Action<Device> updateAction)
-        // {
-        //     _deviceService.UpdateDevice(filter, updateAction);
-        //     return Ok("Device updated successfully");
-        // }
+        [HttpGet("update")]
+        public IActionResult UpdateDevice(int id, [FromQuery] Device newDevice)
+        {
+            _deviceService.UpdateDevice(id, newDevice);
+            return Ok("Device updated successfully");
+        }
     }
 }

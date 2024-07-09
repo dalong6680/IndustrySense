@@ -40,9 +40,18 @@ namespace IndustrySense.Server.Application.Services.Impl
             return _deviceDao.SelectFilteredList(x => true, pageIndex);
         }
 
-        //public void UpdateDevice(Expression<Func<Device, bool>> filter, Action<Device> updateAction)
-        //{
-        //    _deviceDao.Update(filter, updateAction);
-        //}
+        public void UpdateDevice(int id, Device newDevice)
+        {
+            _deviceDao.Update(
+                x => x.DeviceId == id,
+                x =>
+                {
+                    x.DeviceId = newDevice.DeviceId;
+                    x.DeviceName = newDevice.DeviceName;
+                    x.DeviceIpAddress = newDevice.DeviceIpAddress;
+                    x.ParsingRuleId = newDevice.ParsingRuleId;
+                }
+            );
+        }
     }
 }

@@ -13,6 +13,7 @@
                     <el-menu router>
                         <el-menu-item index="/">首页</el-menu-item>
                         <el-menu-item index="device">设备列表</el-menu-item>
+                        <el-menu-item index="rule">解析规则</el-menu-item>
                     </el-menu>
                 </el-scrollbar>
             </el-aside>
