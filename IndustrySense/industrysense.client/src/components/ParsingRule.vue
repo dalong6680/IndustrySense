@@ -83,8 +83,7 @@
         <!-- 脚本编辑对话框 -->
         <el-dialog title="编辑脚本" v-model="scriptEditorVisible" width="800" :close-on-click-modal="false">
             <div style="height: 400px; width: 100%">
-                <Codemirror v-model:value="currentScript" :options="codeMirrorOptions" @input="onScriptInput">
-                </Codemirror>
+                <Codemirror v-model:value="currentScript" :options="cmOptions" @input="onScriptInput" </Codemirror>
             </div>
             <template #footer>
                 <div slot="footer" class="dialog-footer">
@@ -107,47 +106,37 @@ import type { Editor, EditorConfiguration } from "codemirror"
 
 const scriptEditorVisible = ref(false);
 const currentScript = ref('');
-const codeMirrorOptions: EditorConfiguration = {
-    // 语言及语法模式
-    mode: 'text/x-lua',
-    // 主题
-    theme: 'neat',
-    // 显示函数
-    line: true,
-    // 显示行号
-    lineNumbers: true,
-    // 软换行
-    lineWrapping: true,
-    // tab宽度
-    tabSize: 4,
-    // 允许拖入的文件类型
-    allowDropFileTypes: ['text/x-lua'],
-    cursorScrollMargin: 5,
-    extraKeys: {},
-    // 高亮行功能
-    styleActiveLine: true,
-    // 调整scrollbar样式功能
-    // scrollbarStyle: 'overlay',
-    // 自动括号匹配功能
-    matchBrackets: true,
-    autofocus: true,
-    autoRefresh: true,
-    // #region 代码折叠
-    foldGutter: true,
-    // foldOptions: { scanUp: true },
-    gutters: [
-        'CodeMirror-linenumbers',
-        'CodeMirror-foldgutter',
-        'CodeMirror-lint-markers'
-    ],
-    // #endregion
-    showHint: true,
-    lint: true,
-    hintOptions: {
-        // 避免由于提示列表只有一个提示信息时，自动填充
-        completeSingle: false
-    }
-};
+
+const cmRef = ref()
+const cmOptions = {
+    mode: "text/x-lua"
+}
+const onChange = (val, cm) => {
+    console.log(val)
+    console.log(cm.getValue())
+}
+
+const onInput = (val) => {
+    console.log(val)
+}
+
+const onReady = (cm) => {
+    console.log(cm.focus())
+}
+
+onMounted(() => {
+    setTimeout(() => {
+        cmRef.value?.refresh()
+    }, 1000)
+
+    setTimeout(() => {
+        cmRef.value?.resize(300, 200)
+    }, 2000)
+
+    setTimeout(() => {
+        cmRef.value?.cminstance.isClean()
+    }, 3000)
+})
 
 const onScriptInput = (value: string) => {
     currentScript.value = value;
