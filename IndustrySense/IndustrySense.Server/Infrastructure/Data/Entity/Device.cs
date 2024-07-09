@@ -5,6 +5,6 @@
         public int DeviceId { get; set; }
         public required string DeviceName { get; set; }
         public required string DeviceIpAddress { get; set; }
-
+        public int ParsingRuleId { get; set; }
     }
 }

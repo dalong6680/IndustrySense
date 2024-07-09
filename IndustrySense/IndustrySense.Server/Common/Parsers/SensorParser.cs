@@ -11,7 +11,7 @@ namespace IndustrySense.Server.Common.Parsers
         {
             try
             {
-                SensorDescriptor descriptor = JsonSerializer.Deserialize<SensorDescriptor>(src)!;
+                SensorData descriptor = JsonSerializer.Deserialize<SensorData>(src)!;
             }
             catch (JsonException ex)
             {

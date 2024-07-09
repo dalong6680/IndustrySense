@@ -3,18 +3,31 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
+using IndustrySense.Server.Application.Dto;
 using IndustrySense.Server.Common.Executor;
 using IndustrySense.Server.Common.TcpServer;
+using IndustrySense.Server.Infrastructure.Data.Entity;
 using Microsoft.Extensions.Hosting;
 
 namespace IndustrySense.Server.Application.Services
 {
     public class TcpMessageHandlerService : BackgroundService
     {
+        private readonly IRecordService _recordService;
+        private readonly IParsingRuleService _parsingRuleService;
+        private readonly IDeviceService _deviceService;
         private readonly ITcpServer _tcpServer;
 
-        public TcpMessageHandlerService(ITcpServer tcpServer)
+        public TcpMessageHandlerService(
+            ITcpServer tcpServer,
+            IDeviceService deviceService,
+            IParsingRuleService parsingRuleService,
+            IRecordService recordService
+        )
         {
+            _recordService = recordService;
+            _parsingRuleService = parsingRuleService;
+            _deviceService = deviceService;
             _tcpServer = tcpServer;
             _tcpServer.MessageReceived += OnMessageReceived;
         }
@@ -35,39 +48,56 @@ namespace IndustrySense.Server.Application.Services
 
         private void OnMessageReceived(object? sender, string message)
         {
-            // 示例处理：假设处理是异步的
             TcpClient? client = sender as TcpClient;
             var remoteEndPoint = client?.Client.RemoteEndPoint as IPEndPoint;
             var ip = remoteEndPoint?.Address.ToString();
-
-
-
-
-
-
-            ProcessMessageAsync(message).GetAwaiter().GetResult();
+            if (string.IsNullOrEmpty(ip))
+            {
+                return;
+            }
+            var device = _deviceService.GetDeviceByIpAddress(ip);
+            if (device == null)
+            {
+                _deviceService.AddDevice(
+                    new Device() { DeviceIpAddress = ip, DeviceName = "未命名设备" }
+                );
+                device = _deviceService.GetDeviceByIpAddress(ip);
+            }
+            string content = message;
+            if (device!.ParsingRuleId != 0)
+            {
+                string script = _parsingRuleService.GetParsingRuleScriptById(device.ParsingRuleId)!;
+                content = ProcessMessage(message, script)!;
+            }
+            _recordService.AddRecord(
+                new Record()
+                {
+                    DeviceId = device.DeviceId,
+                    Timestamp = DateTime.Now,
+                    Content = content
+                }
+            );
         }
 
-        private Task ProcessMessageAsync(string message)
+        private string? ProcessMessage(string message, string script)
         {
-            string param = message;
-            string lua =
-                @"
-                    local intValue = tonumber(data, 16)
-                    if intValue > 32767 then
-                        intValue = intValue - 65536
-                    end
-                    local temperature = intValue * 0.0625
-                    local formattedTemperature = string.format(""%.2f"", temperature)
-                    return formattedTemperature
-                ";
+            //string lua =
+            //    @"
+            //        local intValue = tonumber(data, 16)
+            //        if intValue > 32767 then
+            //            intValue = intValue - 65536
+            //        end
+            //        local temperature = intValue * 0.0625
+            //        local formattedTemperature = string.format(""%.2f"", temperature)
+            //        return formattedTemperature
+            //    ";
             LuaExecutor executor = new LuaExecutor();
-            var res = executor.ExecuteScript(lua, message)?[0].ToString();
+            var res = executor.ExecuteScript(script, message);
+            var processedRes = res?[0]?.ToString();
 
-            Console.WriteLine($"Processed message: {res}");
+            Console.WriteLine($"Processed message: {processedRes}");
 
-            // 假设消息处理需要异步操作
-            return Task.CompletedTask;
+            return processedRes;
         }
     }
 }

@@ -31,7 +31,7 @@ namespace IndustrySense.Server.Common.Executor
             catch (Exception ex)
             {
                 Console.WriteLine($"Lua execution error: {ex.Message}");
-                return null;
+                return null!;
             }
         }
 

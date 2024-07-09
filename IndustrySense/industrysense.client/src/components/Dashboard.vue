@@ -28,7 +28,7 @@
                 <el-icon>
                   <message />
                 </el-icon>
-                Navigator One
+                设备列表
               </template>
               <el-menu-item-group>
                 <el-menu-item index="1-1">设备1</el-menu-item>
@@ -37,26 +37,7 @@
                 <el-menu-item index="1-4">设备4</el-menu-item>
               </el-menu-item-group>
             </el-sub-menu>
-            <el-sub-menu index="2">
-              <template #title>
-                <el-icon><icon-menu /></el-icon>
-                Navigator Two
-              </template>
-              <el-menu-item-group>
-                <el-menu-item index="2-1">Option 1</el-menu-item>
-                <el-menu-item index="2-2">Option 2</el-menu-item>
-                <el-menu-item index="2-3">Option 3</el-menu-item>
-                <el-menu-item index="2-4">Option 4</el-menu-item>
-              </el-menu-item-group>
-            </el-sub-menu>
-            <el-menu-item index="3">
-              <template #title>
-                <el-icon>
-                  <setting />
-                </el-icon>
-                Navigator Three
-              </template>
-            </el-menu-item>
+            
           </el-menu>
         </el-scrollbar>
       </el-aside>
@@ -65,26 +46,9 @@
 
 
         <el-main>
-          <el-header>
-            <span>设备数据</span>
-            <el-tag type="success" style="float: right;">在线</el-tag>
-          </el-header>
 
-          <el-space :wrap="true">
-            <el-card v-for="elec in electricData" :key="elec.index" class="box-card" style="width: 250px">
-              <template #header>
-                <div class="card-header">
-                  <span>{{ elec.name }}</span>
-                  <el-button class="button" type="text" @click="showChart(elec.name, elec.index)">详情</el-button>
-                </div>
-              </template>
-              <div class="text item">
-                {{ elec.value }}
-              </div>
-            </el-card>
-          </el-space>
 
-          
+
         </el-main>
       </el-container>
     </el-container>
@@ -92,25 +56,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import axios from 'axios';
-import { ElMessage } from 'element-plus'
 
-const electricData = ref([]);
-
-const fetchElectricData = async () => {
-  try {
-    const response = await axios.get('https://localhost:7210/api/ElectricData');
-    electricData.value = response.data;
-  } catch (error) {
-    console.error('Failed to fetch electric data:', error);
-    ElMessage('Failed to fetch electric data:' + error);
-  }
-};
-
-onMounted(() => {
-  fetchElectricData();
-});
 </script>
 
 <style scoped>
@@ -167,3 +113,41 @@ onMounted(() => {
   /* 滚动条高度占满容器 */
 }
 </style>
+<!-- <el-sub-menu index="2">
+  <template #title>
+    <el-icon><icon-menu /></el-icon>
+    Navigator Two
+  </template>
+  <el-menu-item-group>
+    <el-menu-item index="2-1">Option 1</el-menu-item>
+    <el-menu-item index="2-2">Option 2</el-menu-item>
+    <el-menu-item index="2-3">Option 3</el-menu-item>
+    <el-menu-item index="2-4">Option 4</el-menu-item>
+  </el-menu-item-group>
+</el-sub-menu>
+<el-menu-item index="3">
+  <template #title>
+    <el-icon>
+      <setting />
+    </el-icon>
+    Navigator Three
+  </template>
+</el-menu-item> -->
+<!-- <el-header>
+  <span>设备数据</span>
+  <el-tag type="success" style="float: right;">在线</el-tag>
+</el-header>
+
+<el-space :wrap="true">
+  <el-card v-for="elec in electricData" :key="elec.index" class="box-card" style="width: 250px">
+    <template #header>
+      <div class="card-header">
+        <span>{{ elec.name }}</span>
+        <el-button class="button" type="text" @click="showChart(elec.name, elec.index)">详情</el-button>
+      </div>
+    </template>
+    <div class="text item">
+      {{ elec.value }}
+    </div>
+  </el-card>
+</el-space> -->
