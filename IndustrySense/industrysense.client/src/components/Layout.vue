@@ -11,12 +11,6 @@
             <el-aside width="200px">
                 <el-scrollbar>
                     <el-menu router>
-                        <template #title>
-                            <el-icon>
-                                <message />
-                            </el-icon>
-                            设备管理
-                        </template>
                         <el-menu-item index="/">首页</el-menu-item>
                         <el-menu-item index="device">设备列表</el-menu-item>
                     </el-menu>
@@ -29,11 +23,10 @@
         </el-container>
     </div>
 </template>
-  
+
 <script setup lang="ts">
-import { Message } from "@element-plus/icons";
 </script>
-  
+
 <style scoped>
 .common-layout {
     height: 100vh;
@@ -78,4 +71,3 @@ import { Message } from "@element-plus/icons";
     padding: 20px;
 }
 </style>
-  

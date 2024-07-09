@@ -4,23 +4,20 @@
             <div class="complex-header">
                 <div class="complex-header-action">
                     <el-button type="warning" @click="refresh">
-                        <el-icon class="iconfont icon-sync"></el-icon>
+                        <span>刷新</span>
                     </el-button>
-                    <el-button type="primary">
-                        <el-icon class="iconfont icon-plus"></el-icon>
+                    <el-button type="primary" @click="dialogFormVisible = true">
                         <span>添加</span>
                     </el-button>
-                    <el-button type="danger" @click="delSelectData">
-                        <el-icon class="iconfont icon-delete"></el-icon>
+                    <el-button type="danger" @click="deleteSelectedDevices">
                         <span>删除</span>
-                    </el-button>
-                    <el-button type="success">
-                        <el-icon class="iconfont icon-upload"></el-icon>
-                        <span>导出</span>
                     </el-button>
                 </div>
                 <div class="complex-header-input">
-                    <el-input placeholder="请输入标题" style="width: 400px"></el-input>
+                    <el-input placeholder="请输入标题" style="width: 250px"></el-input>
+                    <el-button type="success">
+                        <span>搜索</span>
+                    </el-button>
                 </div>
             </div>
             <div class="complex-content">
@@ -34,7 +31,7 @@
                     <el-table-column label="操作" width="250" align="center">
                         <template #default="scope">
                             <el-button type="primary">编辑</el-button>
-                            <el-button type="danger" @click="delData(scope.row.deviceId)">删除</el-button>
+                            <el-button type="danger" @click="deleteDevice(scope.row.deviceId)">删除</el-button>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -45,19 +42,43 @@
                 </div>
             </div>
         </div>
+
+        <!-- 添加设备的对话框 -->
+        <el-dialog title="添加设备" v-model="dialogFormVisible">
+            <el-form :model="newDevice">
+                <el-form-item label="设备ID">
+                    <el-input v-model="newDevice.DeviceId"></el-input>
+                </el-form-item>
+                <el-form-item label="设备名称">
+                    <el-input v-model="newDevice.DeviceName"></el-input>
+                </el-form-item>
+                <el-form-item label="设备IP地址">
+                    <el-input v-model="newDevice.DeviceIpAddress"></el-input>
+                </el-form-item>
+                <el-form-item label="解析规则ID">
+                    <el-input v-model="newDevice.ParsingRuleId"></el-input>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="dialogFormVisible = false">取消</el-button>
+                <el-button type="primary" @click="addDevice">添加</el-button>
+            </div>
+        </el-dialog>
     </div>
 </template>
-  
+
 <script setup lang="ts">
 import { ref, reactive, onMounted, toRefs } from 'vue'
-import { getDevices } from '@/api/device'
-import { ElMessage } from 'element-plus';
+import { getDevices, deleteDevice, addDevice, deleteDeviceById } from '@/api/device'
+import { ElMessage } from 'element-plus'
+
+const dialogFormVisible = ref(false)
 
 interface IDevice {
-    deviceId: number;
-    deviceName: string;
-    deviceIpAddress: string;
-    parsingRuleId: number;
+    deviceId: number
+    deviceName: string
+    deviceIpAddress: string
+    parsingRuleId: number
 }
 
 const state = reactive({
@@ -68,8 +89,15 @@ const state = reactive({
     page: {
         total: 0,
         page_size: 20,
-        page_number: 1
-    }
+        page_number: 1,
+    },
+})
+
+const newDevice = reactive({
+    DeviceId: 0,
+    DeviceName: '',
+    DeviceIpAddress: '',
+    ParsingRuleId: 0,
 })
 
 const { tableData, loading, page } = toRefs(state)
@@ -80,12 +108,17 @@ onMounted(() => {
 
 const getData = async () => {
     state.loading = true
-    const res = await getDevices()
-    const { resultList } = res
-    state.devices = resultList
-    state.page.total = resultList.length
-    pagination(resultList)
-    state.loading = false
+    try {
+        const res = await getDevices()
+        const { resultList } = res
+        state.devices = resultList
+        state.page.total = resultList.length
+        pagination(resultList)
+    } catch (error) {
+        ElMessage.error('获取设备列表失败')
+    } finally {
+        state.loading = false
+    }
 }
 
 const pagination = (datas: IDevice[]) => {
@@ -95,34 +128,45 @@ const pagination = (datas: IDevice[]) => {
     })
 }
 
-const delData = (id: number) => {
-    state.devices = state.devices.filter((item) => {
-        return item.deviceId !== id
-    })
-    state.page.total = state.devices.length
-    pagination(state.devices)
-}
-
-const delSelectData = () => {
-    const { ids } = state
-    if (ids.length === 0) {
-        ElMessage.warning('请选择设备')
-        return false
+const deleteDevice = async (id: number) => {
+    try {
+        await deleteDeviceById(id)
+        ElMessage.success('设备删除成功')
+        getData()
+    } catch (error) {
+        ElMessage.error('删除设备失败')
     }
-    ids.forEach((itemId) => {
-        delData(itemId)
-    })
-    ElMessage.success('删除成功')
 }
 
-const refresh = () => {
-    state.page.page_number = 1
-    state.page.page_size = 20
-    getData()
+const deleteSelectedDevices = async () => {
+    if (state.ids.length === 0) {
+        ElMessage.warning('请选择设备')
+        return
+    }
+    try {
+        await Promise.all(
+            state.ids.map((id) => deleteDevice(id))
+        )
+        ElMessage.success('设备删除成功')
+        getData()
+    } catch (error) {
+        ElMessage.error('删除设备失败')
+    }
+}
+
+const addDevice = async () => {
+    try {
+        await addDevice({ ...newDevice })
+        ElMessage.success('设备添加成功')
+        closeAddDialog()
+        getData()
+    } catch (error) {
+        ElMessage.error('添加设备失败')
+    }
 }
 
 const handleSelectionChange = (deviceList: IDevice[]) => {
-    state.ids = deviceList.map(device => device.deviceId)
+    state.ids = deviceList.map((device) => device.deviceId)
 }
 
 const handleSizeChange = (size: number) => {
@@ -134,8 +178,14 @@ const handleCurrentChange = (page: number) => {
     state.page.page_number = page
     pagination(state.devices)
 }
+
+const refresh = () => {
+    state.page.page_number = 1
+    state.page.page_size = 20
+    getData()
+}
 </script>
-  
+
 <style scoped>
 .complex-table {
     height: 100%;
@@ -180,4 +230,3 @@ const handleCurrentChange = (page: number) => {
     padding-top: 15px;
 }
 </style>
-  

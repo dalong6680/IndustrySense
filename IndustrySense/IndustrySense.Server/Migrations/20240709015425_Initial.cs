@@ -7,7 +7,7 @@ using MySql.EntityFrameworkCore.Metadata;
 namespace IndustrySense.Server.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

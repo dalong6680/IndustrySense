@@ -1,13 +1,10 @@
-<!-- src/views/Home.vue -->
 <template>
-    <div>
-        <h1>首页概览信息</h1>
-        <!-- 添加首页内容 -->
+    <div class="home">
+        <h2>欢迎使用管理后台</h2>
     </div>
 </template>
-  
+
 <script setup lang="ts">
 </script>
-  
+
 <style scoped></style>
-  
