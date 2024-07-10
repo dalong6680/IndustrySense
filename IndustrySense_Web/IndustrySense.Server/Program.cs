@@ -63,7 +63,7 @@ namespace IndustrySense.Server
                     builder =>
                     {
                         builder
-                            .WithOrigins("https://localhost:5173") // 替换为你的前端地址
+                            .WithOrigins("https://localhost:5173") // 前端地址
                             .AllowAnyHeader()
                             .AllowAnyMethod();
                     }

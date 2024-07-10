@@ -8,6 +8,7 @@ namespace IndustrySense.Server.Common.TcpServer
 {
     public class TcpServer : ITcpServer
     {
+        public int ClientCount { get; private set; }
         private readonly TcpListener _listener;
         private bool _isRunning = false;
 
@@ -42,7 +43,7 @@ namespace IndustrySense.Server.Common.TcpServer
             {
                 TcpClient client = await _listener.AcceptTcpClientAsync();
                 Console.WriteLine($"TCP Client connected: {client.Client.RemoteEndPoint}");
-
+                ClientCount++;
                 _ = Task.Run(() => HandleClient(client));
             }
         }
@@ -91,6 +92,7 @@ namespace IndustrySense.Server.Common.TcpServer
             {
                 Console.WriteLine($"Client disconnected: {client.Client.RemoteEndPoint}");
                 client.Close();
+                ClientCount--;
             }
         }
     }

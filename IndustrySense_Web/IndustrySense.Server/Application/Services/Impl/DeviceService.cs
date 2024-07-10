@@ -53,5 +53,10 @@ namespace IndustrySense.Server.Application.Services.Impl
                 }
             );
         }
+
+        public Device? GetDeviceById(int id)
+        {
+            return _deviceDao.Select(x => x.DeviceId == id);
+        }
     }
 }

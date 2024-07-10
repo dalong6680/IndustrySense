@@ -31,7 +31,7 @@ namespace IndustrySense.Server.Api.Controllers
             var buffer = new byte[1024 * 4];
             while (webSocket.State == WebSocketState.Open)
             {
-                var temperature = random.Next(-10, 35);
+                var temperature = random.Next(25, 30);
                 var message = Encoding.UTF8.GetBytes(temperature.ToString());
                 Task<WebSocketReceiveResult> receiveTask = webSocket.ReceiveAsync(
                     new ArraySegment<byte>(buffer),

@@ -28,8 +28,9 @@
                     <el-table-column prop="deviceName" label="设备名称" align="center"></el-table-column>
                     <el-table-column prop="deviceIpAddress" label="设备IP地址" width="200" align="center"></el-table-column>
                     <el-table-column prop="parsingRuleId" label="解析规则ID" width="100" align="center"></el-table-column>
-                    <el-table-column label="操作" width="250" align="center">
+                    <el-table-column label="操作" align="center">
                         <template #default="scope">
+                            <el-button type="success" @click="goToRecords(scope.row.deviceId)">查看记录</el-button>
                             <el-button type="primary"
                                 @click="doEditDevice0(scope.row.deviceId, scope.row.deviceName, scope.row.deviceIpAddress, scope.row.parsingRuleId)">编辑</el-button>
                             <el-button type="danger" @click="deleteDevice(scope.row.deviceId)">删除</el-button>
@@ -99,7 +100,13 @@
 import { ref, reactive, onMounted, toRefs } from 'vue'
 import { getDevices, addDevice, deleteDeviceById, updateDevice } from '@/api/device'
 import { ElMessage } from 'element-plus'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
+
+const goToRecords = (deviceId: number) => {
+    router.push({ path: '/record', query: { deviceId } })
+}
 let addDialogVisible = ref(false)
 let editDialogVisible = ref(false)
 

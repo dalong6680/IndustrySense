@@ -1,8 +1,5 @@
 <template>
   <div>
-    <el-header style="background-color: #2d2d2d; color: white;">
-      <span>实时温度数据</span>
-    </el-header>
     <el-main>
       <div id="chart" style="width: 100%; height: 400px;"></div>
     </el-main>
@@ -54,7 +51,7 @@ export default {
       this.chart = echarts.init(document.getElementById('chart'));
       const option = {
         title: {
-          text: '实时温度数据',
+          text: '设备1-实时温度数据',
         },
         tooltip: {
           trigger: 'axis',
@@ -66,8 +63,8 @@ export default {
         },
         yAxis: {
           type: 'value',
-          min: -20,
-          max: 40,
+          min: 20,
+          max: 30,
         },
         series: [
           {

@@ -13,7 +13,7 @@
         </el-col>
         <el-col :span="8">
             <div class="statistic-card">
-                <el-statistic :value="deviceCount">
+                <el-statistic :value="onlineDeviceCount">
                     <template #title>
                         <div style="display: inline-flex; align-items: center">
                             在线设备数
@@ -40,14 +40,17 @@
 import { ref, onMounted } from 'vue';
 import { getDeviceCount } from '@/api/device';
 import { getRuleCount } from '@/api/parsingRule';
+import { getOnlineDeviceCount } from '@/api/info';
 
 
 const deviceCount = ref(0);
+const onlineDeviceCount = ref(0);
 const ruleCount = ref(0);
 
 onMounted(async () => {
     deviceCount.value = await getDeviceCount();
     ruleCount.value = await getRuleCount();
+    onlineDeviceCount.value = await getOnlineDeviceCount();
 });
 </script>
 

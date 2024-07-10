@@ -73,9 +73,9 @@
             </el-form>
             <template #footer>
                 <div slot="footer" class="dialog-footer">
+                    <el-button type="success" @click="openScriptEditor">编辑脚本</el-button>
                     <el-button @click="editDialogVisible = false">取消</el-button>
                     <el-button type="primary" @click="saveEditRule">保存</el-button>
-                    <el-button type="info" @click="openScriptEditor">编辑脚本</el-button>
                 </div>
             </template>
         </el-dialog>
@@ -83,7 +83,8 @@
         <!-- 脚本编辑对话框 -->
         <el-dialog title="编辑脚本" v-model="scriptEditorVisible" width="800" :close-on-click-modal="false">
             <div style="height: 400px; width: 100%">
-                <Codemirror v-model:value="currentScript" :options="cmOptions" @input="onScriptInput" </Codemirror>
+                <codemirror v-model="currentScript" :lineNumbers="true" :style="{ height: '400px' }" :autofocus="true"
+                    :indent-with-tab="true" :tabSize="4" :extensions="extensions" @input="onScriptInput" />
             </div>
             <template #footer>
                 <div slot="footer" class="dialog-footer">
@@ -99,44 +100,16 @@
 import { ref, reactive, onMounted, toRefs } from 'vue'
 import { getParsingRules, addParsingRule, deleteParsingRuleById, updateParsingRule } from '@/api/parsingRule'
 import { ElMessage } from 'element-plus'
-import "codemirror/mode/javascript/javascript.js"
-import Codemirror from "codemirror-editor-vue3"
-import type { CmComponentRef } from "codemirror-editor-vue3"
-import type { Editor, EditorConfiguration } from "codemirror"
+
+import { Codemirror } from 'vue-codemirror'
+import { oneDark } from '@codemirror/theme-one-dark'
+import { StreamLanguage } from "@codemirror/language"
+import { lua } from "@codemirror/legacy-modes/mode/lua"
+
+const extensions = ref([StreamLanguage.define(lua), oneDark])
 
 const scriptEditorVisible = ref(false);
 const currentScript = ref('');
-
-const cmRef = ref()
-const cmOptions = {
-    mode: "text/x-lua"
-}
-const onChange = (val, cm) => {
-    console.log(val)
-    console.log(cm.getValue())
-}
-
-const onInput = (val) => {
-    console.log(val)
-}
-
-const onReady = (cm) => {
-    console.log(cm.focus())
-}
-
-onMounted(() => {
-    setTimeout(() => {
-        cmRef.value?.refresh()
-    }, 1000)
-
-    setTimeout(() => {
-        cmRef.value?.resize(300, 200)
-    }, 2000)
-
-    setTimeout(() => {
-        cmRef.value?.cminstance.isClean()
-    }, 3000)
-})
 
 const onScriptInput = (value: string) => {
     currentScript.value = value;
@@ -261,6 +234,7 @@ const doEditRule = async (parsingRuleId: number, name: string, script: string) =
 
     // 在编辑规则对话框打开时，将当前脚本填写进 Codemirror 编辑器
     currentScript.value = script;
+    scriptToSave.value = script;
     editDialogVisible.value = true;
 }
 

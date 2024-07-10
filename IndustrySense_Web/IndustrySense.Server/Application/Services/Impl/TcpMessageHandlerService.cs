@@ -64,11 +64,7 @@ namespace IndustrySense.Server.Application.Services
                 device = _deviceService.GetDeviceByIpAddress(ip);
             }
             string content = message;
-            if (device!.ParsingRuleId != 0)
-            {
-                string script = _parsingRuleService.GetParsingRuleScriptById(device.ParsingRuleId)!;
-                content = ProcessMessage(message, script)!;
-            }
+
             _recordService.AddRecord(
                 new Record()
                 {
@@ -77,27 +73,6 @@ namespace IndustrySense.Server.Application.Services
                     Content = content
                 }
             );
-        }
-
-        private string? ProcessMessage(string message, string script)
-        {
-            //string lua =
-            //    @"
-            //        local intValue = tonumber(data, 16)
-            //        if intValue > 32767 then
-            //            intValue = intValue - 65536
-            //        end
-            //        local temperature = intValue * 0.0625
-            //        local formattedTemperature = string.format(""%.2f"", temperature)
-            //        return formattedTemperature
-            //    ";
-            LuaExecutor executor = new LuaExecutor();
-            var res = executor.ExecuteScript(script, message);
-            var processedRes = res?[0]?.ToString();
-
-            Console.WriteLine($"Processed message: {processedRes}");
-
-            return processedRes;
         }
     }
 }

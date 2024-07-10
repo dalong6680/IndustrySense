@@ -8,6 +8,7 @@ namespace IndustrySense.Server.Application.Services
         void AddDevice(Device device);
         Device? GetDeviceByIpAddress(string ip);
         Device? GetDeviceByName(string name);
+        Device? GetDeviceById(int id);
         ResultSet<Device> GetDevices(int pageIndex);
         void RemoveDeviceById(int id);
         void UpdateDevice(int id, Device newDevice);
